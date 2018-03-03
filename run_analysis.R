@@ -17,7 +17,7 @@ colnames(train_subject)<-c("subject_id")
 colnames(train_activity)<-c("activity_id")
 colnames(train_feature)<-gsub("-","_",gsub("\\(\\)","",fSel$V2))
 # merge activity description
-train_activity<-merge(x=train_activity,y=activity,by = "activity_id", all.x = TRUE)
+train_activity<-inner_join(train_activity,activity)
 train<-cbind(cbind(train_subject,activity = train_activity$activity),train_feature)
 
 # read test data
@@ -29,14 +29,14 @@ colnames(test_subject)<-c("subject_id")
 colnames(test_activity)<-c("activity_id")
 colnames(test_feature)<-gsub("-","_",gsub("\\(\\)","",fSel$V2))
 # merge activity description
-test_activity<-merge(x=test_activity,y=activity,by = "activity_id", all.x = TRUE)
+test_activity<-inner_join(test_activity,activity)
 test<-cbind(cbind(test_subject,activity = test_activity$activity),test_feature)
 
 # merge train and test
 all_data<-rbind(train,test)
 # summarise
 mean_data <- all_data %>% 
-  group_by(.dots=c("activity","subject_id")) %>% 
+  group_by(.dots=c("subject_id","activity")) %>% 
   summarise_all(.funs = c(mean="mean"))
 
 write.table(x = all_data, file = "activity_dataset.txt")
